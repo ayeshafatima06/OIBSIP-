@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — Coffee, by Altitude</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --ink:#241F1B;
+    --paper:#EFE9DC;
+    --paper-dim:#E4DCC9;
+    --pine:#1B211D;
+    --pine-soft:#242C26;
+    --roast:#8A6A45;
+    --roast-light:#B79167;
+    --moss:#4C6444;
+    --gold:#C9A356;
+    --line: rgba(36,31,27,0.14);
+    --line-light: rgba(239,233,220,0.16);
+
+    --font-display: "Fraunces", serif;
+    --font-body: "Inter", sans-serif;
+    --font-mono: "IBM Plex Mono", monospace;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img, svg{ display:block; max-width:100%; }
+
+  a{ color: inherit; text-decoration: none; }
+
+  .wrap{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  h1, h2, h3{
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+  }
+
+  /* ---------- NAV ---------- */
+
+  header.site-nav{
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(239,233,220,0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 18px 32px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family: var(--font-display);
+    font-weight:600;
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+  }
+
+  .brand .mark{
+    width: 20px;
+    height: 20px;
+    flex-shrink:0;
+  }
+
+  nav.links{
+    display:flex;
+    gap: 36px;
+    align-items:center;
+  }
+
+  nav.links a{
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--ink);
+    position: relative;
+    padding: 4px 0;
+  }
+
+  nav.links a::after{
+    content:"";
+    position:absolute;
+    left:0; bottom:0;
+    width:0%;
+    height:1.5px;
+    background: var(--roast);
+    transition: width 0.25s ease;
+  }
+
+  nav.links a:hover::after{ width:100%; }
+
+  .nav-cta{
+    background: var(--pine);
+    color: var(--paper) !important;
+    padding: 9px 20px;
+    border-radius: 3px;
+    font-size: 0.86rem !important;
+    font-weight: 600 !important;
+  }
+
+  .nav-cta::after{ display:none; }
+  .nav-cta:hover{ background: var(--pine-soft); }
+
+  .nav-toggle{ display:none; }
+
+  /* ---------- HERO ---------- */
+
+  .hero{
+    position: relative;
+    background: var(--pine);
+    color: var(--paper);
+    overflow: hidden;
+    padding: 96px 0 0 0;
+  }
+
+  .hero-inner{
+    display:grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 40px;
+    align-items:center;
+    padding-bottom: 70px;
+  }
+
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .eyebrow::before{
+    content:"";
+    width: 26px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero h1{
+    font-size: clamp(2.6rem, 4.6vw, 4.1rem);
+    font-weight: 600;
+    color: var(--paper);
+    max-width: 12ch;
+  }
+
+  .hero h1 em{
+    font-style: italic;
+    font-weight: 300;
+    color: var(--roast-light);
+  }
+
+  .hero p.sub{
+    margin-top: 22px;
+    font-size: 1.08rem;
+    color: rgba(239,233,220,0.78);
+    max-width: 42ch;
+    font-weight: 400;
+  }
+
+  .hero-actions{
+    margin-top: 34px;
+    display:flex;
+    gap: 16px;
+    align-items:center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary{
+    background: var(--gold);
+    color: var(--ink);
+    padding: 14px 28px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    border-radius: 3px;
+    border: 1px solid var(--gold);
+    transition: background 0.2s ease, transform 0.2s ease;
+    display:inline-block;
+  }
+
+  .btn-primary:hover{
+    background: transparent;
+    color: var(--gold);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost{
+    color: var(--paper);
+    font-size: 0.92rem;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(239,233,220,0.4);
+    padding-bottom: 2px;
+  }
+
+  .btn-ghost:hover{ border-color: var(--paper); }
+
+  /* elevation marker visual */
+  .hero-map{
+    position: relative;
+    height: 380px;
+  }
+
+  .hero-map svg{ width:100%; height:100%; }
+
+  .elevation-pin{
+    position: absolute;
+    top: 28%;
+    left: 46%;
+    text-align: center;
+    font-family: var(--font-mono);
+  }
+
+  .elevation-pin .dot{
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--gold);
+    margin: 0 auto 10px auto;
+    box-shadow: 0 0 0 5px rgba(201,163,86,0.18);
+  }
+
+  .elevation-pin .num{
+    font-size: 1.1rem;
+    color: var(--paper);
+    font-weight: 500;
+  }
+
+  .elevation-pin .label{
+    font-size: 0.68rem;
+    color: rgba(239,233,220,0.6);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .hero-stats{
+    background: var(--pine-soft);
+    border-top: 1px solid var(--line-light);
+  }
+
+  .stats-row{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .stat{
+    padding: 26px 32px;
+    border-left: 1px solid var(--line-light);
+  }
+  .stat:first-child{ border-left:none; }
+
+  .stat .stat-num{
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    color: var(--gold);
+  }
+
+  .stat .stat-label{
+    font-size: 0.78rem;
+    color: rgba(239,233,220,0.62);
+    margin-top: 4px;
+  }
+
+  /* ---------- SECTION SHARED ---------- */
+
+  section{ padding: 100px 0; }
+
+  .section-head{
+    max-width: 560px;
+    margin-bottom: 56px;
+  }
+
+  .section-head .eyebrow{ color: var(--roast); }
+  .section-head .eyebrow::before{ background: var(--roast); }
+
+  .section-head h2{
+    font-size: clamp(1.9rem, 3vw, 2.6rem);
+    color: var(--ink);
+  }
+
+  .section-head p{
+    margin-top: 16px;
+    color: rgba(36,31,27,0.68);
+    font-size: 1.02rem;
+    max-width: 46ch;
+  }
+
+  /* ---------- ORIGINS ---------- */
+
+  .origins{ background: var(--paper); }
+
+  .origin-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .origin-card{
+    background: var(--paper-dim);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 30px 26px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .origin-card:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(36,31,27,0.08);
+  }
+
+  .origin-card .alt{
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--roast);
+    display:flex;
+    justify-content: space-between;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .origin-card h3{
+    font-size: 1.3rem;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .origin-card .region{
+    font-size: 0.85rem;
+    color: rgba(36,31,27,0.55);
+    margin-top: 4px;
+    margin-bottom: 16px;
+  }
+
+  .origin-card .notes{
+    font-size: 0.94rem;
+    color: rgba(36,31,27,0.72);
+  }
+
+  .origin-card .tags{
+    margin-top: 18px;
+    display:flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .origin-card .tags span{
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    background: rgba(76,100,68,0.1);
+    color: var(--moss);
+    padding: 4px 9px;
+    border-radius: 20px;
+  }
+
+  /* ---------- PROCESS ---------- */
+
+  .process{
+    background: var(--pine);
+    color: var(--paper);
+  }
+
+  .process .section-head .eyebrow{ color: var(--gold); }
+  .process .section-head .eyebrow::before{ background: var(--gold); }
+  .process .section-head h2{ color: var(--paper); }
+  .process .section-head p{ color: rgba(239,233,220,0.68); }
+
+  .process-path{
+    position: relative;
+    padding-top: 20px;
+  }
+
+  .process-path svg{ width: 100%; height: 90px; margin-bottom: 10px; }
+
+  .process-steps{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+  }
+
+  .process-step{
+    border-left: 1px solid rgba(239,233,220,0.2);
+    padding-left: 16px;
+  }
+
+  .process-step .stage{
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .process-step h3{
+    font-size: 1.08rem;
+    margin-top: 8px;
+    color: var(--paper);
+    font-weight: 500;
+  }
+
+  .process-step p{
+    font-size: 0.86rem;
+    color: rgba(239,233,220,0.6);
+    margin-top: 8px;
+  }
+
+  /* ---------- TESTIMONIALS ---------- */
+
+  .testimonials{ background: var(--paper); }
+
+  .testi-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .testi-card{
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 28px 26px;
+  }
+
+  .testi-card .quote{
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.08rem;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .testi-card .who{
+    margin-top: 20px;
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+
+  .testi-card .avatar{
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--roast-light);
+    color: var(--paper);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    flex-shrink:0;
+  }
+
+  .testi-card .who .name{ font-size: 0.9rem; font-weight: 600; }
+  .testi-card .who .role{ font-size: 0.78rem; color: rgba(36,31,27,0.55); }
+
+  /* ---------- CTA BAND ---------- */
+
+  .cta-band{
+    background: var(--roast);
+    color: var(--paper);
+  }
+
+  .cta-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 56px 0;
+  }
+
+  .cta-inner h2{
+    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+    color: var(--paper);
+    max-width: 16ch;
+  }
+
+  .cta-inner .btn-primary{
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+  .cta-inner .btn-primary:hover{
+    background: transparent;
+    color: var(--paper);
+    border-color: var(--paper);
+  }
+
+  /* ---------- FOOTER ---------- */
+
+  footer{
+    background: var(--pine);
+    color: rgba(239,233,220,0.7);
+    padding: 64px 0 32px 0;
+  }
+
+  .footer-grid{
+    display:grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--line-light);
+  }
+
+  .footer-brand .brand{ color: var(--paper); margin-bottom: 14px; }
+
+  .footer-brand p{
+    font-size: 0.9rem;
+    max-width: 32ch;
+    color: rgba(239,233,220,0.55);
+  }
+
+  .footer-col h4{
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+
+  .footer-col ul{ list-style:none; display:flex; flex-direction:column; gap: 10px; }
+
+  .footer-col a{
+    font-size: 0.9rem;
+    color: rgba(239,233,220,0.68);
+    transition: color 0.2s ease;
+  }
+
+  .footer-col a:hover{ color: var(--paper); }
+
+  .footer-bottom{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    padding-top: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 0.82rem;
+    color: rgba(239,233,220,0.45);
+  }
+
+  .footer-bottom .socials{
+    display:flex;
+    gap: 18px;
+  }
+
+  .footer-bottom .socials a{ color: rgba(239,233,220,0.6); }
+  .footer-bottom .socials a:hover{ color: var(--gold); }
+
+  /* ---------- RESPONSIVE ---------- */
+
+  @media (max-width: 900px){
+    .hero-inner{ grid-template-columns: 1fr; }
+    .hero-map{ height: 260px; order: -1; }
+    .origin-grid{ grid-template-columns: 1fr 1fr; }
+    .testi-grid{ grid-template-columns: 1fr 1fr; }
+    .process-steps{ grid-template-columns: 1fr 1fr; row-gap: 28px; }
+    .footer-grid{ grid-template-columns: 1fr 1fr; }
+    .stats-row{ grid-template-columns: 1fr 1fr; }
+    .stat:nth-child(3){ border-left:none; }
+  }
+
+  @media (max-width: 640px){
+    .wrap{ padding: 0 20px; }
+    .nav-inner{ padding: 16px 20px; }
+    nav.links{
+      position: fixed;
+      top: 62px; left:0; right:0;
+      background: var(--paper);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 20px;
+      gap: 18px;
+      border-bottom: 1px solid var(--line);
+      display:none;
+    }
+    nav.links.open{ display:flex; }
+    .nav-toggle{
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+      background:none;
+      border:none;
+      cursor:pointer;
+      padding: 6px;
+    }
+    .nav-toggle span{
+      width: 20px; height: 2px;
+      background: var(--ink);
+    }
+    section{ padding: 64px 0; }
+    .hero{ padding-top: 64px; }
+    .hero-inner{ padding-bottom: 48px; }
+    .origin-grid{ grid-template-columns: 1fr; }
+    .testi-grid{ grid-template-columns: 1fr; }
+    .process-steps{ grid-template-columns: 1fr; }
+    .process-step{ border-left: none; border-top: 1px solid rgba(239,233,220,0.2); padding: 16px 0 0 0; }
+    .process-path svg{ display:none; }
+    .footer-grid{ grid-template-columns: 1fr; gap: 28px; }
+    .cta-inner{ padding: 40px 0; }
+    .stats-row{ grid-template-columns: 1fr 1fr; }
+    .stat{ padding: 20px; }
+  }
+
+  :focus-visible{
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="#" class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none">
+        <path d="M2 18L8 8L12 14L16 6L22 18" stroke="#8A6A45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Meridian
+    </a>
+    <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.querySelector('nav.links').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="links">
+      <a href="#origins">Origins</a>
+      <a href="#process">Process</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#subscribe" class="nav-cta">Subscribe</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow">Single-origin, sold by elevation</div>
+        <h1>Coffee tastes like <em>where</em> it grew.</h1>
+        <p class="sub">We buy lots by farm and altitude, not by grade or blend name — so the cup in your hands tells you exactly which mountain it came from.</p>
+        <div class="hero-actions">
+          <a href="#subscribe" class="btn-primary">Start a subscription</a>
+          <a href="#origins" class="btn-ghost">See this month's origins</a>
+        </div>
+      </div>
+      <div class="hero-map">
+        <svg viewBox="0 0 420 380" preserveAspectRatio="xMidYMid meet">
+          <g fill="none" stroke="rgba(239,233,220,0.14)" stroke-width="1.4">
+            <path d="M-10 320 C 80 300, 120 250, 210 260 S 360 210, 440 220"/>
+            <path d="M-10 280 C 90 255, 130 210, 220 220 S 370 170, 440 180"/>
+            <path d="M-10 240 C 100 210, 140 170, 230 178 S 380 130, 440 140"/>
+            <path d="M-10 200 C 110 165, 150 130, 235 138 S 385 95, 440 105"/>
+            <path d="M-10 160 C 120 120, 160 90, 240 96 S 390 60, 440 70"/>
+            <path d="M-10 120 C 130 75, 170 50, 245 55 S 395 25, 440 34"/>
+          </g>
+        </svg>
+        <div class="elevation-pin">
+          <div class="dot"></div>
+          <div class="num">1,850m</div>
+          <div class="label">Yirgacheffe, ET</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="wrap">
+      <div class="stats-row">
+        <div class="stat"><div class="stat-num">6</div><div class="stat-label">Active farm partners</div></div>
+        <div class="stat"><div class="stat-num">1,200–2,100m</div><div class="stat-label">Elevation range sourced</div></div>
+        <div class="stat"><div class="stat-num">48hrs</div><div class="stat-label">Roast to doorstep</div></div>
+        <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Traceable to lot</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="origins" id="origins">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">This month's lots</div>
+      <h2>Three farms, three elevations</h2>
+      <p>Each bag lists the exact altitude the cherries were grown at, because the mountain shapes the cup as much as the roast does.</p>
+    </div>
+    <div class="origin-grid">
+      <div class="origin-card">
+        <div class="alt"><span>ALT</span><span>1,850m</span></div>
+        <h3>Konga Washing Station</h3>
+        <div class="region">Yirgacheffe, Ethiopia</div>
+        <p class="notes">Bergamot, white peach, and a jasmine finish that lingers past the last sip.</p>
+        <div class="tags"><span>washed</span><span>floral</span><span>light roast</span></div>
+      </div>
+      <div class="origin-card">
+        <div class="alt"><span>ALT</span><span>1,650m</span></div>
+        <h3>Finca La Providencia</h3>
+        <div class="region">Huila, Colombia</div>
+        <p class="notes">Panela sweetness, red apple, and a clean cocoa snap on the way out.</p>
+        <div class="tags"><span>washed</span><span>fruited</span><span>medium roast</span></div>
+      </div>
+      <div class="origin-card">
+        <div class="alt"><span>ALT</span><span>2,050m</span></div>
+        <h3>Buziraguhindwa Hill</h3>
+        <div class="region">Kayanza, Burundi</div>
+        <p class="notes">Blackcurrant and brown sugar, with a structured, tea-like body.</p>
+        <div class="tags"><span>natural</span><span>bold</span><span>medium roast</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="process" id="process">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">From hillside to cup</div>
+      <h2>The route every lot travels</h2>
+      <p>Same five stages, every time — so the only variable left is the farm itself.</p>
+    </div>
+    <div class="process-path">
+      <svg viewBox="0 0 1000 90" preserveAspectRatio="none">
+        <polyline points="10,75 210,60 410,45 610,28 810,14 990,6" fill="none" stroke="#C9A356" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 8"/>
+        <circle cx="10" cy="75" r="4" fill="#C9A356"/>
+        <circle cx="210" cy="60" r="4" fill="#C9A356"/>
+        <circle cx="410" cy="45" r="4" fill="#C9A356"/>
+        <circle cx="610" cy="28" r="4" fill="#C9A356"/>
+        <circle cx="810" cy="14" r="4" fill="#C9A356"/>
+      </svg>
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="stage">Harvest</div>
+          <h3>Hand-picked</h3>
+          <p>Only ripe cherry, picked in passes over 6–8 weeks.</p>
+        </div>
+        <div class="process-step">
+          <div class="stage">Process</div>
+          <h3>Washed or natural</h3>
+          <p>Method chosen per lot to suit the cherry and climate.</p>
+        </div>
+        <div class="process-step">
+          <div class="stage">Dry</div>
+          <h3>Raised beds</h3>
+          <p>Slow-dried over 2–3 weeks, turned by hand daily.</p>
+        </div>
+        <div class="process-step">
+          <div class="stage">Roast</div>
+          <h3>Small batch</h3>
+          <p>12kg batches, profiled per origin, cupped before release.</p>
+        </div>
+        <div class="process-step">
+          <div class="stage">Ship</div>
+          <h3>Within 48hrs</h3>
+          <p>Sealed and sent within two days of the roast date.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials" id="reviews">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">From home brewers</div>
+      <h2>What subscribers notice first</h2>
+      <p>Mostly, that two bags from the same country rarely taste the same — and now they know why.</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <p class="quote">"I finally understand why my Ethiopian bags taste so different month to month — it's right there on the label."</p>
+        <div class="who">
+          <div class="avatar">RM</div>
+          <div><div class="name">Rina M.</div><div class="role">Pour-over, 2 years</div></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <p class="quote">"The Burundi lot at 2,050 metres was the first coffee that made me slow down and actually taste it."</p>
+        <div class="who">
+          <div class="avatar">DA</div>
+          <div><div class="name">Diego A.</div><div class="role">Espresso at home</div></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <p class="quote">"Shipping is fast enough that I've stopped buying from the grocery store entirely."</p>
+        <div class="who">
+          <div class="avatar">KT</div>
+          <div><div class="name">Kayla T.</div><div class="role">Subscriber since 2024</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band" id="subscribe">
+  <div class="wrap">
+    <div class="cta-inner">
+      <h2>Get next month's origins before they sell out.</h2>
+      <a href="#" class="btn-primary">Start a subscription</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="brand">
+          <svg class="mark" viewBox="0 0 24 24" fill="none">
+            <path d="M2 18L8 8L12 14L16 6L22 18" stroke="#C9A356" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Meridian
+        </a>
+        <p>Single-origin coffee, sourced and sold by the altitude it was grown at.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#origins">This month's lots</a></li>
+          <li><a href="#subscribe">Subscriptions</a></li>
+          <li><a href="#">Gift cards</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#process">Our process</a></li>
+          <li><a href="#">Farm partners</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@meridian.coffee">hello@meridian.coffee</a></li>
+          <li><a href="tel:+18005551212">+1 (800) 555-1212</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Meridian Coffee Co. All rights reserved.</div>
+      <div class="socials">
+        <a href="#" aria-label="Instagram">Instagram</a>
+        <a href="#" aria-label="Twitter">Twitter</a>
+        <a href="#" aria-label="YouTube">YouTube</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
