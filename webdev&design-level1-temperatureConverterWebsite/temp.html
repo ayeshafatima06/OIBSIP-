@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temperature Converter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --bg-1:#1B2130;
+    --bg-2:#232B3E;
+    --card:#F4F2ED;
+    --card-raised:#FFFFFF;
+    --ink:#20232A;
+    --ink-soft:rgba(32,35,42,0.62);
+    --ink-faint:rgba(32,35,42,0.4);
+    --line: rgba(32,35,42,0.1);
+    --cold:#3B7DC4;
+    --cold-deep:#2A5D96;
+    --hot:#D1495B;
+    --hot-deep:#A6303F;
+    --neutral:#6B7280;
+    --error:#C4453B;
+    --error-bg:#FCEEEC;
+    --font-display:"Space Grotesk", sans-serif;
+    --font-body:"Inter", sans-serif;
+    --font-mono:"JetBrains Mono", monospace;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  body{
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(59,125,196,0.35), transparent 42%),
+      radial-gradient(circle at 88% 92%, rgba(209,73,91,0.3), transparent 42%),
+      radial-gradient(circle at 50% 50%, var(--bg-2), var(--bg-1) 75%);
+    color: var(--ink);
+    font-family: var(--font-body);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 48px 20px;
+    line-height: 1.5;
+    perspective: 1400px;
+  }
+
+  .app{
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .app-head{
+    text-align:center;
+    margin-bottom: 34px;
+  }
+
+  .app-head .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8FB4E0;
+    margin-bottom: 10px;
+  }
+
+  .app-head h1{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.7rem, 3.6vw, 2.3rem);
+    letter-spacing: -0.01em;
+    color: #F4F2ED;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  }
+
+  .app-head p{
+    margin-top: 8px;
+    color: rgba(244,242,237,0.6);
+    font-size: 0.96rem;
+  }
+
+  /* ---------- 3D CARD ---------- */
+
+  .card-stage{
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease-out;
+    will-change: transform;
+  }
+
+  .card{
+    background: linear-gradient(155deg, #FBFAF7 0%, var(--card) 60%, #ECE8DF 100%);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 22px;
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.7) inset,
+      0 -30px 60px -30px rgba(32,35,42,0.06) inset,
+      0 30px 60px -12px rgba(10,14,25,0.45),
+      0 12px 24px -8px rgba(10,14,25,0.3);
+    padding: 44px;
+    display:grid;
+    grid-template-columns: 1fr 190px;
+    gap: 40px;
+    align-items: start;
+    transform-style: preserve-3d;
+  }
+
+  .card > *{ transform: translateZ(24px); }
+
+  /* ---------- FORM SIDE ---------- */
+
+  label{
+    display:block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .field{ margin-bottom: 24px; }
+
+  .value-row{
+    display:flex;
+    gap: 10px;
+  }
+
+  input[type="text"]{
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    padding: 15px 16px;
+    border: none;
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--ink);
+    outline: none;
+    box-shadow:
+      inset 0 2px 5px rgba(32,35,42,0.14),
+      inset 0 -1px 0 rgba(255,255,255,0.7),
+      0 1px 0 rgba(255,255,255,0.5);
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+  }
+
+  input[type="text"]:focus{
+    background: var(--card-raised);
+    box-shadow:
+      inset 0 2px 5px rgba(32,35,42,0.1),
+      0 0 0 3px rgba(59,125,196,0.25);
+  }
+
+  input[type="text"].has-error{
+    background: var(--error-bg);
+    box-shadow:
+      inset 0 2px 5px rgba(196,69,59,0.18),
+      0 0 0 3px rgba(196,69,59,0.18);
+  }
+
+  .unit-select{
+    display:flex;
+    gap: 6px;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 5px;
+    box-shadow: inset 0 2px 6px rgba(32,35,42,0.14), inset 0 -1px 0 rgba(255,255,255,0.6);
+  }
+
+  .unit-select input{ position:absolute; opacity:0; pointer-events:none; }
+
+  .unit-select label{
+    margin:0;
+    flex:1;
+    text-align:center;
+    padding: 11px 6px;
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
+    user-select: none;
+  }
+
+  .unit-select input:checked + label{
+    background: linear-gradient(160deg, #2C333F, var(--ink) 70%);
+    color: var(--card-raised);
+    box-shadow:
+      0 4px 10px rgba(32,35,42,0.35),
+      0 1px 0 rgba(255,255,255,0.15) inset,
+      0 -3px 6px rgba(0,0,0,0.25) inset;
+    transform: translateY(-1px);
+  }
+
+  .unit-select input:focus-visible + label{
+    outline: 2px solid var(--cold);
+    outline-offset: 2px;
+  }
+
+  #inputUnitGroup{ margin-top: 6px; }
+
+  .error-msg{
+    display:none;
+    align-items:flex-start;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: var(--error-bg);
+    border: 1px solid rgba(196,69,59,0.25);
+    border-radius: 10px;
+    color: var(--error);
+    font-size: 0.86rem;
+    box-shadow: 0 4px 10px rgba(196,69,59,0.1);
+  }
+
+  .error-msg.visible{ display:flex; }
+
+  .error-msg svg{ flex-shrink:0; margin-top: 1px; }
+
+  .convert-btn{
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(160deg, #34405A, var(--ink) 65%);
+    color: var(--card-raised);
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 0.96rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    box-shadow:
+      0 10px 20px -6px rgba(32,35,42,0.5),
+      0 1px 0 rgba(255,255,255,0.15) inset,
+      0 -4px 8px rgba(0,0,0,0.3) inset;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+    margin-top: 6px;
+  }
+
+  .convert-btn:hover{
+    background: linear-gradient(160deg, #3E5B85, var(--cold-deep) 70%);
+    transform: translateY(-2px);
+    box-shadow:
+      0 14px 26px -6px rgba(42,93,150,0.55),
+      0 1px 0 rgba(255,255,255,0.2) inset,
+      0 -4px 8px rgba(0,0,0,0.25) inset;
+  }
+
+  .convert-btn:active{
+    transform: translateY(1px);
+    box-shadow:
+      0 4px 10px -4px rgba(32,35,42,0.5),
+      0 1px 0 rgba(255,255,255,0.1) inset,
+      0 -2px 4px rgba(0,0,0,0.3) inset;
+  }
+
+  .convert-btn:disabled{
+    background: var(--ink-faint);
+    cursor: not-allowed;
+    transform:none;
+    box-shadow:none;
+  }
+
+  .results{
+    margin-top: 30px;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .result-tile{
+    background: linear-gradient(160deg, var(--card-raised), var(--card));
+    border-radius: 12px;
+    padding: 16px 14px;
+    text-align:center;
+    box-shadow:
+      0 6px 14px -6px rgba(32,35,42,0.18),
+      0 1px 0 rgba(255,255,255,0.7) inset;
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+  }
+
+  .result-tile.active{
+    box-shadow:
+      0 10px 22px -6px rgba(32,35,42,0.3),
+      0 0 0 2px var(--ink) inset;
+    transform: translateY(-2px);
+  }
+
+  .result-tile .unit-label{
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+  }
+
+  .result-tile .unit-value{
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .result-tile .unit-value.empty{ color: var(--ink-faint); font-weight: 400; }
+
+  /* ---------- THERMOMETER SIDE ---------- */
+
+  .thermo-wrap{
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    padding-top: 4px;
+  }
+
+  .thermo-wrap .thermo-caption{
+    margin-top: 16px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    text-align:center;
+  }
+
+  .thermo-svg{
+    width: 88px;
+    filter: drop-shadow(0 14px 20px rgba(32,35,42,0.25));
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+
+  @media (max-width: 700px){
+    .card{
+      grid-template-columns: 1fr;
+      padding: 30px;
+      gap: 28px;
+    }
+    .thermo-wrap{ order: -1; flex-direction: row; gap: 20px; }
+    .thermo-svg{ width: 64px; }
+    .thermo-wrap .thermo-caption{ margin-top:0; text-align:left; }
+    .results{ grid-template-columns: 1fr; }
+    .card-stage{ transform: none !important; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card-stage{ transition: none; }
+  }
+
+  :focus-visible{ outline: 2px solid var(--cold); outline-offset: 2px; }
+
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="app-head">
+    <div class="eyebrow">°C · °F · K</div>
+    <h1>Temperature Converter</h1>
+    <p>Enter a value, pick its unit, and see it converted everywhere at once.</p>
+  </div>
+
+  <div class="card-stage" id="cardStage">
+    <div class="card">
+      <div>
+        <div class="field">
+          <label for="tempValue">Temperature value</label>
+          <div class="value-row">
+            <input type="text" id="tempValue" inputmode="decimal" placeholder="e.g. 25" autocomplete="off">
+          </div>
+          <div class="error-msg" id="errorMsg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16.2" r="0.3" fill="currentColor" stroke="none"/></svg>
+            <span id="errorText">Please enter a valid number.</span>
+          </div>
+        </div>
+
+        <div class="field" id="inputUnitGroup">
+          <label>Input unit</label>
+          <div class="unit-select" role="radiogroup" aria-label="Input unit">
+            <input type="radio" name="unit" id="unitC" value="C" checked>
+            <label for="unitC">°C</label>
+            <input type="radio" name="unit" id="unitF" value="F">
+            <label for="unitF">°F</label>
+            <input type="radio" name="unit" id="unitK" value="K">
+            <label for="unitK">K</label>
+          </div>
+        </div>
+
+        <button class="convert-btn" id="convertBtn">Convert</button>
+
+        <div class="results" id="results">
+          <div class="result-tile" id="tileC">
+            <div class="unit-label">Celsius</div>
+            <div class="unit-value empty" id="valC">—</div>
+          </div>
+          <div class="result-tile" id="tileF">
+            <div class="unit-label">Fahrenheit</div>
+            <div class="unit-value empty" id="valF">—</div>
+          </div>
+          <div class="result-tile" id="tileK">
+            <div class="unit-label">Kelvin</div>
+            <div class="unit-value empty" id="valK">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="thermo-wrap">
+        <svg class="thermo-svg" id="thermoSvg" viewBox="0 0 60 220" fill="none">
+          <defs>
+            <linearGradient id="tubeGlass" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+              <stop offset="18%" stop-color="#E7E3D9" stop-opacity="0.5"/>
+              <stop offset="55%" stop-color="#D9D4C7" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.75"/>
+            </linearGradient>
+            <linearGradient id="mercuryGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop id="mercStop1" offset="0%" stop-color="#3B7DC4"/>
+              <stop id="mercStop2" offset="50%" stop-color="#6FA5DE"/>
+              <stop id="mercStop3" offset="100%" stop-color="#2A5D96"/>
+            </linearGradient>
+            <radialGradient id="bulbGrad" cx="35%" cy="30%" r="75%">
+              <stop id="bulbStop1" offset="0%" stop-color="#6FA5DE"/>
+              <stop id="bulbStop2" offset="55%" stop-color="#3B7DC4"/>
+              <stop id="bulbStop3" offset="100%" stop-color="#1E4571"/>
+            </radialGradient>
+            <radialGradient id="bulbShine" cx="32%" cy="24%" r="30%">
+              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <rect x="19" y="6" width="22" height="154" rx="11" fill="url(#tubeGlass)" stroke="#20232A" stroke-opacity="0.15" stroke-width="1.5"/>
+          <circle cx="30" cy="188" r="28" fill="#E7E3D9" stroke="#20232A" stroke-opacity="0.15" stroke-width="1.5"/>
+
+          <rect id="thermoFill" x="24" y="140" width="12" height="20" rx="6" fill="url(#mercuryGrad)"/>
+          <circle id="thermoBulb" cx="30" cy="188" r="21" fill="url(#bulbGrad)"/>
+          <circle cx="30" cy="188" r="21" fill="url(#bulbShine)"/>
+
+          <rect x="23" y="8" width="4" height="148" rx="2" fill="#FFFFFF" opacity="0.55"/>
+
+          <g stroke="#20232A" stroke-opacity="0.28" stroke-width="1.5">
+            <line x1="43" y1="26" x2="49" y2="26"/>
+            <line x1="43" y1="56" x2="49" y2="56"/>
+            <line x1="43" y1="86" x2="49" y2="86"/>
+            <line x1="43" y1="116" x2="49" y2="116"/>
+            <line x1="43" y1="146" x2="49" y2="146"/>
+          </g>
+        </svg>
+        <div class="thermo-caption" id="thermoCaption">Enter a value to see it on the gauge</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const tempInput = document.getElementById('tempValue');
+  const errorMsg = document.getElementById('errorMsg');
+  const errorText = document.getElementById('errorText');
+  const convertBtn = document.getElementById('convertBtn');
+
+  const valC = document.getElementById('valC');
+  const valF = document.getElementById('valF');
+  const valK = document.getElementById('valK');
+  const tileC = document.getElementById('tileC');
+  const tileF = document.getElementById('tileF');
+  const tileK = document.getElementById('tileK');
+
+  const thermoFill = document.getElementById('thermoFill');
+  const thermoBulb = document.getElementById('thermoBulb');
+  const thermoCaption = document.getElementById('thermoCaption');
+  const mercStop1 = document.getElementById('mercStop1');
+  const mercStop2 = document.getElementById('mercStop2');
+  const mercStop3 = document.getElementById('mercStop3');
+  const bulbStop1 = document.getElementById('bulbStop1');
+  const bulbStop2 = document.getElementById('bulbStop2');
+  const bulbStop3 = document.getElementById('bulbStop3');
+
+  const ABS_ZERO_C = -273.15;
+
+  function getSelectedUnit(){
+    return document.querySelector('input[name="unit"]:checked').value;
+  }
+
+  function showError(message){
+    errorText.textContent = message;
+    errorMsg.classList.add('visible');
+    tempInput.classList.add('has-error');
+  }
+
+  function clearError(){
+    errorMsg.classList.remove('visible');
+    tempInput.classList.remove('has-error');
+  }
+
+  function resetResults(){
+    [valC, valF, valK].forEach(el => {
+      el.textContent = '—';
+      el.classList.add('empty');
+    });
+    [tileC, tileF, tileK].forEach(t => t.classList.remove('active'));
+    thermoCaption.textContent = 'Enter a value to see it on the gauge';
+    setThermo(null);
+  }
+
+  function setThermo(celsius){
+    const minC = -50, maxC = 110;
+    const clamped = celsius === null ? minC : Math.max(minC, Math.min(maxC, celsius));
+    const pct = celsius === null ? 0 : (clamped - minC) / (maxC - minC);
+
+    const tubeTop = 26, tubeBottom = 158;
+    const fillTop = tubeBottom - pct * (tubeBottom - tubeTop);
+    thermoFill.setAttribute('y', fillTop);
+    thermoFill.setAttribute('height', tubeBottom - fillTop + 10);
+
+    let light = '#6FA5DE', mid = '#3B7DC4', deep = '#1E4571';
+    if (celsius !== null){
+      let t;
+      if (clamped <= 0) t = 0;
+      else if (clamped >= 38) t = 1;
+      else t = clamped / 38;
+      light = mixColor('#6FA5DE', '#E88A96', t);
+      mid   = mixColor('#3B7DC4', '#D1495B', t);
+      deep  = mixColor('#1E4571', '#7A2530', t);
+    }
+    mercStop1.setAttribute('stop-color', light);
+    mercStop2.setAttribute('stop-color', mid);
+    mercStop3.setAttribute('stop-color', deep);
+    bulbStop1.setAttribute('stop-color', light);
+    bulbStop2.setAttribute('stop-color', mid);
+    bulbStop3.setAttribute('stop-color', deep);
+  }
+
+  function mixColor(c1, c2, t){
+    const a = hexToRgb(c1), b = hexToRgb(c2);
+    const r = Math.round(a.r + (b.r - a.r) * t);
+    const g = Math.round(a.g + (b.g - a.g) * t);
+    const bl = Math.round(a.b + (b.b - a.b) * t);
+    return `rgb(${r}, ${g}, ${bl})`;
+  }
+
+  function hexToRgb(hex){
+    const n = parseInt(hex.slice(1), 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+  }
+
+  function toCelsius(value, unit){
+    if (unit === 'C') return value;
+    if (unit === 'F') return (value - 32) * 5 / 9;
+    if (unit === 'K') return value - 273.15;
+  }
+
+  function fromCelsius(c){
+    return { C: c, F: c * 9 / 5 + 32, K: c + 273.15 };
+  }
+
+  function formatNum(n){
+    return (Math.round(n * 100) / 100).toString();
+  }
+
+  function performConversion(){
+    const raw = tempInput.value.trim();
+
+    if (raw === ''){
+      showError('Please enter a temperature value.');
+      resetResults();
+      return;
+    }
+
+    const numericPattern = /^-?\d+(\.\d+)?$/;
+    if (!numericPattern.test(raw)){
+      showError('Please enter a valid number (digits only, optional decimal or minus sign).');
+      resetResults();
+      return;
+    }
+
+    const value = parseFloat(raw);
+    const unit = getSelectedUnit();
+    const celsius = toCelsius(value, unit);
+
+    const EPSILON = 0.0001;
+    if (celsius < ABS_ZERO_C - EPSILON){
+      showError(`That's below absolute zero (${ABS_ZERO_C}°C / -459.67°F / 0K) — no temperature can go lower than that.`);
+      resetResults();
+      return;
+    }
+
+    clearError();
+
+    const converted = fromCelsius(celsius);
+
+    valC.textContent = formatNum(converted.C) + '°C';
+    valF.textContent = formatNum(converted.F) + '°F';
+    valK.textContent = formatNum(converted.K) + 'K';
+    [valC, valF, valK].forEach(el => el.classList.remove('empty'));
+
+    tileC.classList.toggle('active', unit === 'C');
+    tileF.classList.toggle('active', unit === 'F');
+    tileK.classList.toggle('active', unit === 'K');
+
+    thermoCaption.textContent = `${formatNum(converted.C)}°C on the gauge`;
+    setThermo(celsius);
+  }
+
+  tempInput.addEventListener('input', () => {
+    const raw = tempInput.value.trim();
+    if (raw === ''){
+      clearError();
+      return;
+    }
+    const numericPattern = /^-?\d*(\.\d*)?$/;
+    if (!numericPattern.test(raw)){
+      showError('Only numbers, a decimal point, and a leading minus sign are allowed.');
+    } else {
+      clearError();
+    }
+  });
+
+  tempInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') performConversion();
+  });
+
+  convertBtn.addEventListener('click', performConversion);
+
+  resetResults();
+
+  // Subtle 3D tilt following the pointer, disabled on touch / reduced motion
+  const stage = document.getElementById('cardStage');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+
+  if (!prefersReducedMotion && !isCoarsePointer){
+    stage.addEventListener('mousemove', (e) => {
+      const rect = stage.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      const rotateY = (x - 0.5) * 10;
+      const rotateX = (0.5 - y) * 10;
+      stage.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+    stage.addEventListener('mouseleave', () => {
+      stage.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
+  }
+</script>
+
+</body>
+</html>
